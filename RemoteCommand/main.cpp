@@ -45,9 +45,14 @@ void installRemoteCommand(){
 	system(toSystem);
 	
 	
+	// Build RemoteCommand executable
+	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && g++ main.cpp -o RemoteCommand");
+	system(toSystem);
+	
+	
 	// Ask user how to update
 	string updateFlag = "-";
-	sprintf(toSystem, "echo \"\n\nHow would you like to check for updates?\n\to  check online\n\tl  check locally\"");
+	sprintf(toSystem, "echo \"\n\nHow would you like to check for updates?\n\to  check online\n\tl  check locally\n\nEnter a letter shown above or any other key to set crontab manually.\"");
 	system(toSystem);
 	system("stty raw");
 	usrIn = getchar();
@@ -55,42 +60,56 @@ void installRemoteCommand(){
 	updateFlag += usrIn;
 	
 	switch (updateFlag.at(1)) {
-  case 'o':
+  case 'o':																	// Online
 		{
-			cout << "Online" << endl;
+			// Create blank oldCommand in directory with main.cpp
+			sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && touch oldCommand && chmod +x oldCommand");
+			system(toSystem);
+			
+			// Copy crontab entry to clipboard (OSX & unix & linux)
+#if defined(__APPLE__) && defined(__MACH__)
+			sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -o\" | pbcopy");
+			system(toSystem);
+#elif defined(__unix__) || defined(__linux__)
+			sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -o\" > toClip && xsel --clipboard < toClip && rm toClip");
+			system(toSystem);
+#endif
+			// Have user set crontab
+			sprintf(toSystem, "clear && echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand %s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"", updateFlag.c_str());
+			system(toSystem);
+
 		}
 			break;
-  case 'l':
+  case 'l':																	// Local
 		{
-			cout << "Local" << endl;
+			// Create blank oldCommand in directory with main.cpp
+			sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && touch oldCommand && chmod +x oldCommand && touch newCommand && chmod +x newCommand");
+			system(toSystem);
+			
+			// Copy crontab entry to clipboard (OSX & unix & linux)
+#if defined(__APPLE__) && defined(__MACH__)
+			sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -l\" | pbcopy");
+			system(toSystem);
+#elif defined(__unix__) || defined(__linux__)
+			sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -l\" > toClip && xsel --clipboard < toClip && rm toClip");
+			system(toSystem);
+#endif
+			
+			// Have user set crontab
+			sprintf(toSystem, "clear && echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand %s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"", updateFlag.c_str());
+			system(toSystem);
+
 		}
 			break;
 
   default:
+		{
+			sprintf(toSystem, "clear && echo \"Opening crontab with nano. Hit any key to continue.\"");
+		}
 			break;
 	}
 
 	
-	// Create blank oldCommand in directory with main.cpp
-	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && touch oldCommand && chmod +x oldCommand && touch newCommand && chmod +x newCommand");
-	system(toSystem);
-	
-	// Build RemoteCommand executable in same directory
-	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && g++ main.cpp -o RemoteCommand");
-	system(toSystem);
-	
-	// Copy crontab entry to clipboard (OSX & unix & linux)
-#if defined(__APPLE__) && defined(__MACH__)
-	sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\" | pbcopy");
-	system(toSystem);
-#elif defined(__unix__) || defined(__linux__)
-	sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\" > toClip && xsel --clipboard < toClip && rm toClip");
-	system(toSystem);
-#endif
-	
-	// Have user set crontab
-	sprintf(toSystem, "clear && echo \"\n\n\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"");
-	system(toSystem);
 	
 	system("stty raw");
 	usrIn = getchar();
