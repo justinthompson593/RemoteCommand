@@ -30,7 +30,7 @@ void installRemoteCommand(){
 	char toSystem[4096];
 	
 	// Ask user to install? Abort if q or Q
-	sprintf(toSystem, "clear && echo -e \"\n\n\n\n\nInstalling RemoteCommand\n\nThis will create a directory named RemoteCommand in $HOME\n\nHit any key to continue or q to quit\"");
+	sprintf(toSystem, "clear && echo \"\n\n\n\n\nInstalling RemoteCommand\n\nThis will create a directory named RemoteCommand in $HOME\n\nHit any key to continue or q to quit\"");
 	system(toSystem);
 	system("stty raw");
 	char usrIn = getchar();
@@ -44,8 +44,35 @@ void installRemoteCommand(){
 	sprintf(toSystem, "cd $HOME && git clone -b master https://github.com/justinthompson593/RemoteCommand.git && cd RemoteCommand && git branch %s && git checkout %s && echo -e \"# %s\nCreated on $(date)\" > README.md && git add -A && git commit -m \"New branch: %s\" && git push -u origin %s", branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str());
 	system(toSystem);
 	
+	
+	// Ask user how to update
+	string updateFlag = "-";
+	sprintf(toSystem, "echo \"\n\nHow would you like to check for updates?\n\to  check online\n\tl  check locally\"");
+	system(toSystem);
+	system("stty raw");
+	usrIn = getchar();
+	system("stty cooked");
+	updateFlag += usrIn;
+	
+	switch (updateFlag.at(1)) {
+  case 'o':
+		{
+			cout << "Online" << endl;
+		}
+			break;
+  case 'l':
+		{
+			cout << "Local" << endl;
+		}
+			break;
+
+  default:
+			break;
+	}
+
+	
 	// Create blank oldCommand in directory with main.cpp
-	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && touch oldCommand && chmod +x oldCommand");
+	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && touch oldCommand && chmod +x oldCommand && touch newCommand && chmod +x newCommand");
 	system(toSystem);
 	
 	// Build RemoteCommand executable in same directory
@@ -62,7 +89,7 @@ void installRemoteCommand(){
 #endif
 	
 	// Have user set crontab
-	sprintf(toSystem, "clear && echo -e \"\n\n\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"");
+	sprintf(toSystem, "clear && echo \"\n\n\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"");
 	system(toSystem);
 	
 	system("stty raw");
@@ -73,7 +100,7 @@ void installRemoteCommand(){
 	sprintf(toSystem, "env EDITOR=nano crontab -e");
 	system(toSystem);
 	
-	sprintf(toSystem, "echo -e \"\nTo change your crontab with nano again, call\n\nenv EDITOR=nano crontab -e\n\nfrom your teminal.\"");
+	sprintf(toSystem, "echo \"\nTo change your crontab with nano again, call\n\nenv EDITOR=nano crontab -e\n\nin your teminal.\n\nInstallation complete. To run a \"");
 	system(toSystem);
 }
 
