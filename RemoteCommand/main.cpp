@@ -57,12 +57,12 @@ void installRemoteCommand(){
 	sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\" | pbcopy");
 	system(toSystem);
 #elif defined(__unix__) || defined(__linux__)
-	sprintf(buff, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\" > toClip && xsel --clipboard < toClip && rm toClip");
-	system(buff);
+	sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\" > toClip && xsel --clipboard < toClip && rm toClip");
+	system(toSystem);
 #endif
 	
 	// Have user set crontab
-	sprintf(toSystem, "clear && echo -e \"\n\n\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\n\nPaste the line into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"");
+	sprintf(toSystem, "clear && echo -e \"\n\n\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"");
 	system(toSystem);
 	
 	system("stty raw");
@@ -71,6 +71,9 @@ void installRemoteCommand(){
 	
 	// Call crontab in nano
 	sprintf(toSystem, "env EDITOR=nano crontab -e");
+	system(toSystem);
+	
+	sprintf(toSystem, "echo -e \"\nTo change your crontab with nano again, call\n\nenv EDITOR=nano crontab -e\n\nfrom your teminal.\"");
 	system(toSystem);
 }
 
