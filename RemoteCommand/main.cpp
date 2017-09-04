@@ -101,12 +101,29 @@ void installRemoteCommand(){
 	
 	// Copy crontab entry to clipboard (OSX & unix & linux)
 #if defined(__APPLE__) && defined(__MACH__)
-	sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -o\" | pbcopy");
+	sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\" | pbcopy");
 	system(toSystem);
 #elif defined(__unix__) || defined(__linux__)
-	sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -o\" > toClip && xsel --clipboard < toClip && rm toClip");
+	sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\" > toClip && xsel --clipboard < toClip && rm toClip");
 	system(toSystem);
 #endif
+	
+	
+	// Have user set crontab
+	sprintf(toSystem, "clear && echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand %s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"", updateFlag.c_str());
+	system(toSystem);
+	
+	system("stty raw");
+	usrIn = getchar();
+	system("stty cooked");
+	
+	// Call crontab in nano
+	sprintf(toSystem, "env EDITOR=nano crontab -e");
+	system(toSystem);
+	
+	sprintf(toSystem, "echo \"\nTo change your crontab with nano again, call\n\nenv EDITOR=nano crontab -e\n\nin your teminal.\n\nInstallation complete. To run a \"");
+	system(toSystem);
+	
 	
 	switch (updateFlag.at(1)) {
   case 'o':																	// Online
@@ -114,36 +131,12 @@ void installRemoteCommand(){
 			
 			
 			
-			// Have user set crontab
-			sprintf(toSystem, "clear && echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand %s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"", updateFlag.c_str());
-			system(toSystem);
-
-			system("stty raw");
-			usrIn = getchar();
-			system("stty cooked");
 			
-			// Call crontab in nano
-			sprintf(toSystem, "env EDITOR=nano crontab -e");
-			system(toSystem);
-			
-			sprintf(toSystem, "echo \"\nTo change your crontab with nano again, call\n\nenv EDITOR=nano crontab -e\n\nin your teminal.\n\nInstallation complete. To run a \"");
-			system(toSystem);
 		}
 			break;
   case 'l':																	// Local
 		{
 			
-			
-			
-			
-			// Copy crontab entry to clipboard (OSX & unix & linux)
-#if defined(__APPLE__) && defined(__MACH__)
-			sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -l%s\" | pbcopy", UpdateOptions.c_str());
-			system(toSystem);
-#elif defined(__unix__) || defined(__linux__)
-			sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -l%s\" > toClip && xsel --clipboard < toClip && rm toClip", localUpdateOptions.c_str());
-			system(toSystem);
-#endif
 			
 			// Have user set crontab
 			sprintf(toSystem, "clear && echo \"\n\n\nCalling crontab -e. The following lines should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand %s%s\nWhen you continue, the nano editor will open. Paste the lines into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the ones you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"", updateFlag.c_str(), UpdateOptions.c_str());
