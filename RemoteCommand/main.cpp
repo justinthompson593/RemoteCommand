@@ -46,6 +46,10 @@ bool compareOldAndNew(){
 
 void installRemoteCommand(){
 	
+	
+	char usrIn = getchar();
+	string toCrontab = "";
+	
 	// Get email prefix for new branch name ( joesmith@web.net --> newBranchName joesmith )
 	system("echo \"$(git config user.email)\" > gitEmail");
 	ifstream ifs("gitEmail");
@@ -65,7 +69,7 @@ void installRemoteCommand(){
 	sprintf(toSystem, "clear && echo \"\n\n\n\n\nInstalling RemoteCommand\n\nThis will create a directory named RemoteCommand in $HOME\n\nHit any key to continue or q to quit\"");
 	system(toSystem);
 	system("stty raw");
-	char usrIn = getchar();
+	
 	system("stty cooked");
 	if( strncmp(&usrIn, "q", 1) == 0 || strncmp(&usrIn, "Q", 1) == 0 ){
 		cout << endl << endl << "Quitting." << endl;
@@ -82,16 +86,27 @@ void installRemoteCommand(){
 	system(toSystem);
 	
 	
-	// Ask user how to update
-	string updateFlag = "-";				// -o Check online for updates / -l Check locally for updates
-	string UpdateOptions = "\n";
+//	// Ask user how to update
+//	string updateFlag = "-";				// -o Check online for updates / -l Check locally for updates
+//	string UpdateOptions = "\n";
 	
-	sprintf(toSystem, "echo \"\n\nHow would you like to check for updates?\n\to  check online\n\tl  check locally\n\nEnter a letter shown above or any other key to set crontab manually.\"");
+	//	How often would you like to check for updates?
+	//		m  every minute
+	//		M  every n minutes (n will be requested next)				USE int n = stoi(&usrIn);
+	//		h  every hour
+	//		H  every n hours
+	//		d  on a day (1-31) of every month
+	//		w  on a day of the week
+	//
+	//	Enter a letter
+	//
+	//
+	sprintf(toSystem, "echo \"\n\nHow often would you like to check for updates?\n\tm  every minute/n minutes\n\th  every hour/n hours\n\td  on a day (1-31) of every month\n\t\n\nEnter a letter shown above or any other key to set crontab manually.\"");
 	system(toSystem);
 	system("stty raw");
 	usrIn = getchar();
 	system("stty cooked");
-	updateFlag += usrIn;
+//	updateFlag += usrIn;
 	
 	
 	// Create blank oldCommand and newCommand in directory with main.cpp
