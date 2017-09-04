@@ -93,25 +93,27 @@ void installRemoteCommand(){
 	system("stty cooked");
 	updateFlag += usrIn;
 	
+	
 	// Create blank oldCommand and newCommand in directory with main.cpp
 	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && touch oldCommand && chmod +x oldCommand && touch newCommand && chmod +x newCommand");
 	system(toSystem);
 	
+	
+	// Copy crontab entry to clipboard (OSX & unix & linux)
+#if defined(__APPLE__) && defined(__MACH__)
+	sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -o\" | pbcopy");
+	system(toSystem);
+#elif defined(__unix__) || defined(__linux__)
+	sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -o\" > toClip && xsel --clipboard < toClip && rm toClip");
+	system(toSystem);
+#endif
+	
 	switch (updateFlag.at(1)) {
   case 'o':																	// Online
 		{
-			// Create blank oldCommand in directory with main.cpp
-			sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && touch oldCommand && chmod +x oldCommand");
-			system(toSystem);
 			
-			// Copy crontab entry to clipboard (OSX & unix & linux)
-#if defined(__APPLE__) && defined(__MACH__)
-			sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -o\" | pbcopy");
-			system(toSystem);
-#elif defined(__unix__) || defined(__linux__)
-			sprintf(toSystem, "echo \"* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand -o\" > toClip && xsel --clipboard < toClip && rm toClip");
-			system(toSystem);
-#endif
+			
+			
 			// Have user set crontab
 			sprintf(toSystem, "clear && echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand %s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"", updateFlag.c_str());
 			system(toSystem);
@@ -188,8 +190,10 @@ int main(int argc, const char * argv[]) {
 	
 	for(int i=0; i<argc; i++){
 		
-		if( strncmp(argv[i], "--install", 9) == 0 )
+		if( strncmp(argv[i], "--install", 9) == 0 ){
 			installRemoteCommand();
+			return 1;
+		}
 		
 	}
 	
