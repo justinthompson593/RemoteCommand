@@ -20,7 +20,9 @@ bool compareOldAndNew(){
 	system("echo $HOME/RemoteCommand/RemoteCommand/ > RemCmdDir");
 	ifstream pathFile("RemCmdDir");
 	string Path((istreambuf_iterator<char>(pathFile)), istreambuf_iterator<char>());
-	Path = Path.substr(0, Path.length()-2);
+	
+	pathFile.close();
+	Path = Path.substr(0, Path.length()-1);
 	
 	char buff[2048];
 	sprintf(buff, "%soldCommand", Path.c_str());
@@ -182,6 +184,7 @@ void installRemoteCommand(){
 }
 
 int main(int argc, const char * argv[]) {
+	
 	
 	for(int i=0; i<argc; i++){
 		
