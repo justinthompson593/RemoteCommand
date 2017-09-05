@@ -110,11 +110,6 @@ void installRemoteCommand(){
 		return;
 	}
 	
-	// Clone RemoteCommand & push new branch
-	sprintf(toSystem, "cd $HOME && git clone -b master https://github.com/justinthompson593/RemoteCommand.git && cd RemoteCommand && git branch %s && git checkout %s && echo \"# %s\nCreated on $(date)\" > README.md && git add -A && git commit -m \"New branch: %s\" && git push -u origin %s", branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str());
-	system(toSystem);
-	
-	
 	// Build RemoteCommand executable
 	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && g++ main.cpp -o RemoteCommand");
 	system(toSystem);
@@ -122,6 +117,13 @@ void installRemoteCommand(){
 	// Create blank oldCommand and newCommand in directory with main.cpp
 	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && touch oldCommand && chmod +x oldCommand && touch newCommand && chmod +x newCommand");
 	system(toSystem);
+	
+	// Clone RemoteCommand & push new branch
+	sprintf(toSystem, "cd $HOME && git clone -b master https://github.com/justinthompson593/RemoteCommand.git && cd RemoteCommand && git branch %s && git checkout %s && echo \"# %s\nCreated on $(date)\" > README.md && git add -A && git commit -m \"New branch: %s\" && git push -u origin %s", branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str());
+	system(toSystem);
+	
+	
+	
 	
 	// Get crontab entry to paste to clipboard. The user prompt is:
 	//
@@ -241,24 +243,24 @@ void installRemoteCommand(){
 #endif
 		
 		// Have user set crontab
-		sprintf(toSystem, "echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n%s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Ctrl+Shift+V or Command+v in OSX), or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit c to continue or q to quit. This will open your crontab in the nano editor.\"", toCrontab.c_str());
+		sprintf(toSystem, "echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n%s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Ctrl+Shift+V or Command+v in OSX), or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nEnter c to continue or q to quit. This will open your crontab in the nano editor.\"", toCrontab.c_str());
 		system(toSystem);
 	}
 	else{
 		// Have user set crontab
-		sprintf(toSystem, "echo \"\n\n\nCalling env EDITOR=nano crontab -e.\n This will open your crontab in the nano editor. Edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. (Alternately, hit Ctrl+x and you'll be prompted to save by hitting y.) To turn off mail notifications, add MAILTO=\\\"\\\" to the line above.\n\nHit c to continue or q to quit. \"");
+		sprintf(toSystem, "echo \"\n\n\nCalling env EDITOR=nano crontab -e.\n This will open your crontab in the nano editor. Edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. (Alternately, hit Ctrl+x and you'll be prompted to save by hitting y.) To turn off mail notifications, add MAILTO=\\\"\\\" to the line above.\n\nEnter c to continue or q to quit. \"");
 		system(toSystem);
 	}
 	
-	usrIn = 'a';
-	while (usrIn != 'c' || usrIn != 'q') {
-		system("stty raw");
-		usrIn = getchar();
-		system("stty cooked");
-	}
+//	usrIn = 'a';
+//	while ( strncmp(&usrIn, "q", 1) != 0 || strncmp(&usrIn, "c", 1) != 0) {
+//		system("stty raw");
+//		usrIn = getchar();
+//		system("stty cooked");
+//	}
+	cin >> usrIn;
 	
-	
-	if( strncmp(&usrIn, "q", 1) == 0 || strncmp(&usrIn, "Q", 1) == 0 ){
+	if( strncmp(&usrIn, "q", 1) == 0 ){
 		cout << endl << endl << "Installation aborted." << endl;
 		return;
 	}
