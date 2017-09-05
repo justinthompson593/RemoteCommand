@@ -1,0 +1,1 @@
+echo "Testing RemoteCommand install from debug" > $HOME/Desktop/newmotherfuckingfile.txt
