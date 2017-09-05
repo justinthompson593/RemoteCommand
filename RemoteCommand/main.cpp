@@ -51,6 +51,7 @@ bool compareOldAndNew(){
 	pathFile.close();
 	Path = Path.substr(0, Path.length()-1);
 	
+	
 	char buff[2048];
 	sprintf(buff, "%soldCommand", Path.c_str());
 	ifstream oldFile(buff);
@@ -105,7 +106,7 @@ void installRemoteCommand(){
 	}
 	
 	// Clone RemoteCommand & push new branch
-	sprintf(toSystem, "cd $HOME && git clone -b master https://github.com/justinthompson593/RemoteCommand.git && cd RemoteCommand && git branch %s && git checkout %s && echo -e \"# %s\nCreated on $(date)\" > README.md && git add -A && git commit -m \"New branch: %s\" && git push -u origin %s", branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str());
+	sprintf(toSystem, "cd $HOME && git clone -b master https://github.com/justinthompson593/RemoteCommand.git && cd RemoteCommand && git branch %s && git checkout %s && echo \"# %s\nCreated on $(date)\" > README.md && git add -A && git commit -m \"New branch: %s\" && git push -u origin %s", branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str());
 	system(toSystem);
 	
 	
@@ -123,17 +124,16 @@ void installRemoteCommand(){
 	//	How often would you like to check for updates?
 	//		m  every minute
 	//		M  every n minutes (n will be requested next)
-	//		h  every hour
+	//		h  every hour (defaults to minute 0 of each hour)
 	//		H  every n hours
 	//		s  at a specific minute(s) each hour
 	//		S  at a specific hour(s) each day
 	//		e  something else (crontab help will be displayed)
-	//		x  set crontab manually (crontab will be opened in nano)
 	//
 	//	Enter a letter shown above or any other key to set crontab manually.
 	//
 	//
-	sprintf(toSystem, "echo \"\n\nHow often would you like to check for updates?\n\tm  every minute\n\tM  every n minutes (n will be requested next)\n\th  every hour\n\tH  every n hours\n\ts  at a specific minute each hour\n\tS  at a specific hour each day\n\te  something else (crontab help will be displayed)\n\nEnter a letter shown above or any other key to set crontab manually.\"");
+	sprintf(toSystem, "echo \"\n\nHow often would you like to check for updates?\n\tm  every minute\n\tM  every n minutes (n will be requested next)\n\th  every hour (defaults to minute 0 of each hour)\n\tH  every n hours\n\ts  at a specific minute(s) each hour\n\tS  at a specific hour(s) each day\n\te  something else (crontab help will be displayed)\n\nEnter a letter shown above or any other key to set crontab manually.\"");
 	system(toSystem);
 	system("stty raw");
 	usrIn = getchar();
@@ -141,15 +141,25 @@ void installRemoteCommand(){
 
 	switch (usrIn) {
   case 'm':
-		{}
+		{
+			toCrontab = "* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand";
+		}
 			break;
   case 'M':
 		{
-			// Get n number of min to check    USE int n = stoi(&usrIn);
+			// Get n number of min to check
+			cout << "Enter number of minutes to wait between updates (2-59): ";
+			string uIn;
+			cin >> uIn;
+			toCrontab += "*/";
+			toCrontab += uIn;
+			toCrontab += " * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand";
 		}
 			break;
   case 'h':
-		{}
+		{
+			toCrontab = "0 * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand";
+		}
 			break;
   case 'H':
 		{}
@@ -175,8 +185,9 @@ void installRemoteCommand(){
   default:
 		{
 			copyCrontabToClip = false;
-			sprintf(toSystem, "echo \"\nYou have chosen to edit crontab manually. The path to the executable, RemoteCommand, is $HOME/RemoteCommand/RemoteCommand/. So your crontab entry should look something like this:\n\n0 * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\"");
+			sprintf(toSystem, "echo \"\nYou have chosen to edit crontab manually. The path to the executable, RemoteCommand, is $HOME/RemoteCommand/RemoteCommand/. So your crontab entry should look something like this:\n\n0 * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\"\n\nHere's some help info on crontab:\n\n");
 			system(toSystem);
+			printCrontabHelp();
 		}
 			break;
 			
@@ -192,12 +203,17 @@ void installRemoteCommand(){
 		sprintf(toSystem, "echo \"%s\" | pbcopy", toCrontab.c_str());
 		system(toSystem);
 #elif defined(__unix__) || defined(__linux__)
-		sprintf(toSystem, "echo \"%s\" > RemCmdClip && xsel --clipboard < RemCmdClip && rm RemCmdClip");
+		sprintf(toSystem, "echo \"%s\" > RemCmdClip && xsel --clipboard < RemCmdClip && rm RemCmdClip", toCrontab.c_str());
 		system(toSystem);
 #endif
 		
 		// Have user set crontab
-		sprintf(toSystem, "clear && echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n%s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"", toCrontab.c_str());
+		sprintf(toSystem, "echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n%s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Ctrl+Shift+V or Command+v in OSX), or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"", toCrontab.c_str());
+		system(toSystem);
+	}
+	else{
+		// Have user set crontab
+		sprintf(toSystem, "echo \"\n\n\nCalling env EDITOR=nano crontab -e.\n This will open your crontab in the nano editor. Edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. (Alternately, hit Ctrl+x and you'll be prompted to save by hitting y.) To turn off mail notifications, add MAILTO=\\\"\\\" to the line above.\n\nHit any key to continue. \"");
 		system(toSystem);
 	}
 	
@@ -219,65 +235,42 @@ void installRemoteCommand(){
 	system(toSystem);
 	
 	
-//	switch (updateFlag.at(1)) {
-//  case 'o':																	// Online
-//		{
-//			
-//			
-//			
-//			
-//		}
-//			break;
-//  case 'l':																	// Local
-//		{
-//			
-//			
-//			// Have user set crontab
-//			sprintf(toSystem, "clear && echo \"\n\n\nCalling crontab -e. The following lines should be copied to your clipboard.\n\n* * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand %s%s\nWhen you continue, the nano editor will open. Paste the lines into the editor (Command+v in OSX or Ctrl+Shift+V in *nix) to call RemoteCommand every minute, or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the ones you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"", updateFlag.c_str(), UpdateOptions.c_str());
-//			system(toSystem);
-//			
-//			system("stty raw");
-//			usrIn = getchar();
-//			system("stty cooked");
-//			
-//			// Call crontab in nano
-//			sprintf(toSystem, "env EDITOR=nano crontab -e");
-//			system(toSystem);
-//			
-//			sprintf(toSystem, "echo \"\nTo change your crontab with nano again, call\n\nenv EDITOR=nano crontab -e\n\nin your teminal.\n\nInstallation complete. To run a \"");
-//			system(toSystem);
-//		}
-//			break;
-//
-//  default:
-//		{
-//			sprintf(toSystem, "clear && echo \"\n\n\nCalling env EDITOR=nano crontab -e. Hit any key to continue.\"");
-//			
-//			system("stty raw");
-//			usrIn = getchar();
-//			system("stty cooked");
-//			
-//			// Call crontab in nano
-//			sprintf(toSystem, "env EDITOR=nano crontab -e");
-//			system(toSystem);
-//			
-//			sprintf(toSystem, "echo \"\nTo change your crontab with nano again, call\n\nenv EDITOR=nano crontab -e\n\nin your teminal.\n\nInstallation complete.\"");
-//			system(toSystem);
-//		}
-//			break;
-//	}
-
-	
-	
 	
 }
+
+
+void update(){
+	char systemBuffer[4096];
+	
+	// Run the new script
+	system("$HOME/RemoteCommand/RemoteCommand/newCommand");
+	
+	// Overwrite oldCommand
+	system("cp $HOME/RemoteCommand/RemoteCommand/newCommand $HOME/RemoteCommand/RemoteCommand/oldCommand");
+	
+	// Get email prefix for branch name ( joesmith@web.net --> BranchName joesmith )
+	system("echo \"$(git config user.email)\" > gitEmail");
+	ifstream ifs("gitEmail");
+	string email((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
+	ifs.close();
+	if( email.length() < 1 ){
+		cout << "ERROR: Cannot find git user email. This may cause problems." << endl;
+	}
+	else{system("rm gitEmail");}
+	string branchName = email.substr(0,email.find("@"));
+	
+	
+	sprintf(systemBuffer, "cd $HOME/RemoteCommand && git add -A && git commit -m \"RemoteCommand update on $(date)\" && git push -u origin %s", branchName.c_str());
+	system(systemBuffer);
+}
+
 
 int main(int argc, const char * argv[]) {
 	
 	
-	printCrontabHelp();
-	
-	return 222;
+//	printCrontabHelp();
+//	
+//	return 222;
 	
 	for(int i=0; i<argc; i++){
 		
@@ -288,7 +281,18 @@ int main(int argc, const char * argv[]) {
 		
 	}
 	
-	
+	// Check to see if changes have been made to newCommand
+	if(!compareOldAndNew()){
+		
+		update();
+		
+	}
+	else{
+		// Pull from git
+		system("cd $HOME/RemoteCommand && git pull");
+		if(!compareOldAndNew())
+			update();
+	}
 	
 	
 	return 0;
