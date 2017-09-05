@@ -99,14 +99,14 @@ void installRemoteCommand(){
 	
 	
 	// Ask user to install? Abort if q or Q
-	sprintf(toSystem, "echo \"\n\n\n*******Installing RemoteCommand*******\n\nThis will create a directory named RemoteCommand in $HOME\n\nHit any key to continue or q to quit\"");
+	sprintf(toSystem, "echo \"\n\n\n*******Installing RemoteCommand\n\nThis will create a directory named RemoteCommand in $HOME\n\nHit any key to continue or q to quit\"");
 	system(toSystem);
 	
 	system("stty raw");
 	usrIn = getchar();
 	system("stty cooked");
 	if( strncmp(&usrIn, "q", 1) == 0 || strncmp(&usrIn, "Q", 1) == 0 ){
-		cout << endl << endl << "Quitting." << endl;
+		cout << endl << endl << "Installation aborted." << endl;
 		return;
 	}
 	
@@ -187,7 +187,7 @@ void installRemoteCommand(){
 			cout << "Enter the update minute (0-59) or minutes separated only by commas (0,15,30,45):" << endl;
 			cin >> uIn;
 			cout << endl;
-			toCrontab += usrIn;
+			toCrontab += uIn;
 			toCrontab += " * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand";
 		}
 			break;
@@ -201,7 +201,7 @@ void installRemoteCommand(){
 			cout << "Enter the update hour (0-24) or hours separated only by commas (0,6,12,18):" << endl;
 			cin >> uIn;
 			cout << endl;
-			toCrontab += usrIn;
+			toCrontab += uIn;
 			toCrontab += " * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand";
 		}
 			break;
@@ -241,12 +241,12 @@ void installRemoteCommand(){
 #endif
 		
 		// Have user set crontab
-		sprintf(toSystem, "echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n%s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Ctrl+Shift+V or Command+v in OSX), or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue. This will open your crontab in the nano editor.\"", toCrontab.c_str());
+		sprintf(toSystem, "echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n%s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Ctrl+Shift+V or Command+v in OSX), or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue or q to quit. This will open your crontab in the nano editor.\"", toCrontab.c_str());
 		system(toSystem);
 	}
 	else{
 		// Have user set crontab
-		sprintf(toSystem, "echo \"\n\n\nCalling env EDITOR=nano crontab -e.\n This will open your crontab in the nano editor. Edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. (Alternately, hit Ctrl+x and you'll be prompted to save by hitting y.) To turn off mail notifications, add MAILTO=\\\"\\\" to the line above.\n\nHit any key to continue. \"");
+		sprintf(toSystem, "echo \"\n\n\nCalling env EDITOR=nano crontab -e.\n This will open your crontab in the nano editor. Edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. (Alternately, hit Ctrl+x and you'll be prompted to save by hitting y.) To turn off mail notifications, add MAILTO=\\\"\\\" to the line above.\n\nHit any key to continue or q to quit. \"");
 		system(toSystem);
 	}
 	
@@ -254,10 +254,17 @@ void installRemoteCommand(){
 	system("stty raw");
 	usrIn = getchar();
 	system("stty cooked");
+	if( strncmp(&usrIn, "q", 1) == 0 || strncmp(&usrIn, "Q", 1) == 0 ){
+		cout << endl << endl << "Installation aborted." << endl;
+		return;
+	}
+	else{
+		// Call crontab in nano
+		sprintf(toSystem, "env EDITOR=nano crontab -e");
+		system(toSystem);
+	}
 	
-	// Call crontab in nano
-	sprintf(toSystem, "env EDITOR=nano crontab -e");
-	system(toSystem);
+	
 	
 	sprintf(toSystem, "echo \"\nTo change your crontab with nano again, call\n\nenv EDITOR=nano crontab -e\n\nin your teminal.\n\n*******Installation complete*******\nTo run a command remotely, edit the executable newCommand in $HOME/RemoteCommand/RemoteCommand/ and push the changes to your branch (%s) on github. When RemoteCommand is called as per your crontab entry, the changes will be pulled and the new command in newCommand will be executed. To run a command locally (why?) you can type your command in the file newCommand. Note that newCommand is an executable file; it can be any bash script.\"", branchName.c_str());
 	system(toSystem);
