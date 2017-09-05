@@ -74,8 +74,10 @@ bool compareOldAndNew(){
 
 void installRemoteCommand(){
 	
+	// Buffer for commands to system
+	char toSystem[4096];
 	
-	char usrIn = getchar();
+	char usrIn;
 	string toCrontab = "";
 	bool copyCrontabToClip = true;
 	
@@ -85,7 +87,8 @@ void installRemoteCommand(){
 	string email((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	ifs.close();
 	if( email.length() < 1 ){
-		cout << "ERROR: Cannot find git user email. Check to see if there is a file named gitEmail in the same directory as the executable. If that file does not have an email address in it, you may need to install/configure git in this terminal and try installing again. Installation aborted." << endl;
+		sprintf(toSystem, "ERROR: Cannot find git user email. Check to see if there is a file named gitEmail in $PWD. If that file does not have an email address in it, you may need to install/configure git in this terminal and try installing again. Installation aborted.");
+		system(toSystem);
 		return;
 	}
 	else{
@@ -93,14 +96,14 @@ void installRemoteCommand(){
 	}
 	string branchName = email.substr(0,email.find("@"));
 	
-	// Buffer for commands to system
-	char toSystem[4096];
+	
 	
 	// Ask user to install? Abort if q or Q
-	sprintf(toSystem, "clear && echo \"\n\n\n\n\nInstalling RemoteCommand\n\nThis will create a directory named RemoteCommand in $HOME\n\nHit any key to continue or q to quit\"");
+	sprintf(toSystem, "echo \"\n\n\n*******Installing RemoteCommand*******\n\nThis will create a directory named RemoteCommand in $HOME\n\nHit any key to continue or q to quit\"");
 	system(toSystem);
-	system("stty raw");
 	
+	system("stty raw");
+	usrIn = getchar();
 	system("stty cooked");
 	if( strncmp(&usrIn, "q", 1) == 0 || strncmp(&usrIn, "Q", 1) == 0 ){
 		cout << endl << endl << "Quitting." << endl;
