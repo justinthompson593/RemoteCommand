@@ -179,7 +179,7 @@ void installRemoteCommand(){
   case 's':
 		{
 			string uIn;
-			cout << "Enter the update minute (0-59) or minutes separated only by commas (0,15,30,45) to be run every hour:" << endl;
+			cout << "Enter the update minute (0-59) or minutes separated only by commas (0,15,30,45):" << endl;
 			cin >> uIn;
 			cout << endl;
 			toCrontab += usrIn;
@@ -187,7 +187,18 @@ void installRemoteCommand(){
 		}
 			break;
   case 'S':
-		{}
+		{
+			string uIn;
+			cout << "Enter the update minute (0-59):";
+			cin >> uIn;
+			toCrontab += uIn;
+			toCrontab += " ";
+			cout << "Enter the update hour (0-24) or hours separated only by commas (0,6,12,18):" << endl;
+			cin >> uIn;
+			cout << endl;
+			toCrontab += usrIn;
+			toCrontab += " * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand";
+		}
 			break;
   case 'e':
 		{
