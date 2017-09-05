@@ -261,7 +261,7 @@ void installRemoteCommand(){
 	sprintf(toSystem, "env EDITOR=nano crontab -e");
 	system(toSystem);
 	
-	sprintf(toSystem, "echo \"\nTo change your crontab with nano again, call\n\nenv EDITOR=nano crontab -e\n\nin your teminal.\n\nInstallation complete. To run a command remotely, edit newCommand and push the changes to your branch (%s) on github. When RemoteCommand is called as per your crontab entry, the changes will be pulled and the new command in newCommand will be executed. To run a command locally (why?) you can type your command in the file newCommand in $HOME/RemoteCommand/RemoteCommand/.\"", branchName.c_str());
+	sprintf(toSystem, "echo \"\nTo change your crontab with nano again, call\n\nenv EDITOR=nano crontab -e\n\nin your teminal.\n\nInstallation complete. To run a command remotely, edit the executable newCommand in $HOME/RemoteCommand/RemoteCommand/ and push the changes to your branch (%s) on github. When RemoteCommand is called as per your crontab entry, the changes will be pulled and the new command in newCommand will be executed. To run a command locally (why?) you can type your command in the file newCommand. Note that newCommand is an executable file; it can be any bash script.\"", branchName.c_str());
 	system(toSystem);
 	
 	
