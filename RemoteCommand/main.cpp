@@ -241,19 +241,23 @@ void installRemoteCommand(){
 #endif
 		
 		// Have user set crontab
-		sprintf(toSystem, "echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n%s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Ctrl+Shift+V or Command+v in OSX), or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit any key to continue or q to quit. This will open your crontab in the nano editor.\"", toCrontab.c_str());
+		sprintf(toSystem, "echo \"\n\n\nCalling crontab -e. The following line should be copied to your clipboard.\n\n%s\n\nWhen you continue, the nano editor will open. Paste the line into the editor (Ctrl+Shift+V or Command+v in OSX), or edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. To turn off mail notifications, add MAILTO=\\\"\\\" to the line above the one you're about to paste.\n\nHit c to continue or q to quit. This will open your crontab in the nano editor.\"", toCrontab.c_str());
 		system(toSystem);
 	}
 	else{
 		// Have user set crontab
-		sprintf(toSystem, "echo \"\n\n\nCalling env EDITOR=nano crontab -e.\n This will open your crontab in the nano editor. Edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. (Alternately, hit Ctrl+x and you'll be prompted to save by hitting y.) To turn off mail notifications, add MAILTO=\\\"\\\" to the line above.\n\nHit any key to continue or q to quit. \"");
+		sprintf(toSystem, "echo \"\n\n\nCalling env EDITOR=nano crontab -e.\n This will open your crontab in the nano editor. Edit it to suit your needs. When you're done, hit Ctrl+o to save and Ctrl+x to exit. (Alternately, hit Ctrl+x and you'll be prompted to save by hitting y.) To turn off mail notifications, add MAILTO=\\\"\\\" to the line above.\n\nHit c to continue or q to quit. \"");
 		system(toSystem);
 	}
 	
+	usrIn = 'a';
+	while (usrIn != 'c' || usrIn != 'q') {
+		system("stty raw");
+		usrIn = getchar();
+		system("stty cooked");
+	}
 	
-	system("stty raw");
-	usrIn = getchar();
-	system("stty cooked");
+	
 	if( strncmp(&usrIn, "q", 1) == 0 || strncmp(&usrIn, "Q", 1) == 0 ){
 		cout << endl << endl << "Installation aborted." << endl;
 		return;
