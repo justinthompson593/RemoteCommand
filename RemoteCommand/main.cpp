@@ -85,29 +85,58 @@ void installRemoteCommand(){
 	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && g++ main.cpp -o RemoteCommand");
 	system(toSystem);
 	
-	
-//	// Ask user how to update
-//	string updateFlag = "-";				// -o Check online for updates / -l Check locally for updates
-//	string UpdateOptions = "\n";
-	
+	// Get crontab entry to paste to clipboard. The user prompt is:
+	//
+	//
 	//	How often would you like to check for updates?
 	//		m  every minute
-	//		M  every n minutes (n will be requested next)				USE int n = stoi(&usrIn);
+	//		M  every n minutes (n will be requested next)
 	//		h  every hour
 	//		H  every n hours
-	//		d  on a day (1-31) of every month
-	//		w  on a day of the week
+	//		s  at a specific minute each hour
+	//		S  at a specific hour each day
+	//		e  something else
+	//		x  set crontab manually (crontab will be opened in nano)
 	//
-	//	Enter a letter
+	//	Enter a letter shown above or any other key to set crontab manually.
 	//
 	//
-	sprintf(toSystem, "echo \"\n\nHow often would you like to check for updates?\n\tm  every minute/n minutes\n\th  every hour/n hours\n\td  on a day (1-31) of every month\n\t\n\nEnter a letter shown above or any other key to set crontab manually.\"");
+	sprintf(toSystem, "echo \"\n\nHow often would you like to check for updates?\n\tm  every minute\n\tM  every n minutes (n will be requested next)\n\th  every hour\n\tH  every n hours\n\ts  at a specific minute each hour\n\tS  at a specific hour each day\n\te  something else\n\tx  set crontab manually (crontab will be opened in nano)\n\nEnter a letter shown above or any other key to set crontab manually.\"");
 	system(toSystem);
 	system("stty raw");
 	usrIn = getchar();
 	system("stty cooked");
-//	updateFlag += usrIn;
-	
+
+	switch (usrIn) {
+  case 'm':
+		{}
+			break;
+  case 'M':
+		{
+			// Get n number of min to check    USE int n = stoi(&usrIn);
+		}
+			break;
+  case 'h':
+		{}
+			break;
+  case 'H':
+		{}
+			break;
+  case 's':
+		{}
+			break;
+  case 'S':
+		{}
+			break;
+  default:
+		{
+			sprintf(toSystem, "echo \"\nYou have chosen to edit crontab manually. The path to the executable, RemoteCommand, is $HOME/RemoteCommand/RemoteCommand/. So your crontab entry should look something like this:\n\n0 * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand\"");
+			system(toSystem);
+		}
+			break;
+			
+  
+	}
 	
 	// Create blank oldCommand and newCommand in directory with main.cpp
 	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && touch oldCommand && chmod +x oldCommand && touch newCommand && chmod +x newCommand");
