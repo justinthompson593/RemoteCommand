@@ -85,8 +85,7 @@ void installRemoteCommand(){
 	string email((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	ifs.close();
 	if( email.length() < 1 ){
-		cout << "ERROR: Cannot find git user email. Installation aborted." << endl;
-//		system("rm gitEmail");
+		cout << "ERROR: Cannot find git user email. Check to see if there is a file named gitEmail in the same directory as the executable. If that file does not have an email address in it, you may need to install/configure git in this terminal and try installing again. Installation aborted." << endl;
 		return;
 	}
 	else{
