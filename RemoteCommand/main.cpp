@@ -82,7 +82,8 @@ void installRemoteCommand(){
 	bool copyCrontabToClip = true;
 	
 	// Get email prefix for new branch name ( joesmith@web.net --> newBranchName joesmith )
-	system("echo \"$(git config user.email)\" > gitEmail");
+	sprintf(toSystem, "echo \"$(git config user.email)\" > gitEmail");
+	system(toSystem);
 	ifstream ifs("gitEmail");
 	string email((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	ifs.close();
@@ -102,28 +103,34 @@ void installRemoteCommand(){
 	sprintf(toSystem, "echo \"\n\n\n*******Installing RemoteCommand\n\nThis will create a directory named RemoteCommand in $HOME\n\nHit any key to continue or q to quit\"");
 	system(toSystem);
 	
-	system("stty raw");
+	sprintf(toSystem, "stty raw");
+	system(toSystem);
 	usrIn = getchar();
-	system("stty cooked");
+	sprintf(toSystem, "stty cooked");
+	system(toSystem);
+	
+	
 	if( strncmp(&usrIn, "q", 1) == 0 || strncmp(&usrIn, "Q", 1) == 0 ){
 		cout << endl << endl << "Installation aborted." << endl;
 		return;
 	}
 	
-	// Build RemoteCommand executable
-	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && g++ main.cpp -o RemoteCommand");
+	// Clone into RemoteCommand, make new branch
+	// Build RemoteCommand executables
+	// Push changes to new branch
+	sprintf(toSystem, "cd $HOME && git clone -b master https://github.com/justinthompson593/RemoteCommand.git && cd RemoteCommand && git branch %s && git checkout %s && echo \"# %s\nCreated on $(date)\" > README.md && cd $HOME/RemoteCommand/RemoteCommand && g++ main.cpp -o RemoteCommand && touch oldCommand && chmod +x oldCommand && touch newCommand && chmod +x newCommand && cd $HOME/RemoteCommand && git add -A && git commit -m \"New branch: %s\" && git push -u origin %s", branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str());
 	system(toSystem);
 	
-	// Create blank oldCommand and newCommand in directory with main.cpp
-	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand && touch oldCommand && chmod +x oldCommand && touch newCommand && chmod +x newCommand");
-	system(toSystem);
-	
-	// Clone RemoteCommand & push new branch
-	sprintf(toSystem, "cd $HOME && git clone -b master https://github.com/justinthompson593/RemoteCommand.git && cd RemoteCommand && git branch %s && git checkout %s && echo \"# %s\nCreated on $(date)\" > README.md && git add -A && git commit -m \"New branch: %s\" && git push -u origin %s", branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str());
-	system(toSystem);
-	
-	
-	
+//	// Create blank oldCommand and newCommand in directory with main.cpp
+//	sprintf(toSystem, "cd $HOME/RemoteCommand/RemoteCommand ");
+//	system(toSystem);
+//	
+//	// Clone RemoteCommand & push new branch
+//	sprintf(toSystem, " && git add -A && git commit -m \"New branch: %s\" && git push -u origin %s", branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str(), branchName.c_str());
+//	system(toSystem);
+//	
+//	
+//	
 	
 	// Get crontab entry to paste to clipboard. The user prompt is:
 	//
@@ -141,10 +148,11 @@ void installRemoteCommand(){
 	//
 	//
 	sprintf(toSystem, "echo \"\n\nHow often would you like to check for updates?\n\tm  every minute\n\tM  every n minutes (n will be requested next)\n\th  every hour (defaults to minute 0 of each hour)\n\tH  every n hours\n\ts  at a specific minute(s) each hour\n\tS  at a specific hour(s) each day\n\te  something else (crontab help will be displayed)\n\nEnter a letter shown above or any other key to set crontab manually.\"");
+	sprintf(toSystem, "stty raw");
 	system(toSystem);
-	system("stty raw");
 	usrIn = getchar();
-	system("stty cooked");
+	sprintf(toSystem, "stty cooked");
+	system(toSystem);
 
 	switch (usrIn) {
   case 'm':
@@ -258,9 +266,10 @@ void installRemoteCommand(){
 //		usrIn = getchar();
 //		system("stty cooked");
 //	}
-	cin >> usrIn;
-	
-	if( strncmp(&usrIn, "q", 1) == 0 ){
+	string userIn;
+	cin >> userIn;
+//	sprintf(userIn, "%s", usrIn);
+	if( userIn.compare("q") == 0 || userIn.compare("Q") == 0){
 		cout << endl << endl << "Installation aborted." << endl;
 		return;
 	}
@@ -332,8 +341,8 @@ int main(int argc, const char * argv[]) {
 	else{
 		// Pull from git
 		system("cd $HOME/RemoteCommand && git pull");
-		if(!compareOldAndNew())
-			update();
+//		if(!compareOldAndNew())
+//			update();
 	}
 	
 	
