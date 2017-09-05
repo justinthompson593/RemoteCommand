@@ -154,6 +154,7 @@ void installRemoteCommand(){
 			toCrontab += "*/";
 			toCrontab += uIn;
 			toCrontab += " * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand";
+			cout << endl;
 		}
 			break;
   case 'h':
@@ -162,10 +163,28 @@ void installRemoteCommand(){
 		}
 			break;
   case 'H':
-		{}
+		{
+			string uIn;
+			cout << "Enter the update minute (0-59):";
+			cin >> uIn;
+			toCrontab += uIn;
+			toCrontab += " */";
+			cout << endl <<  "Enter number of hours to wait between updates (2-23): ";
+			
+			cin >> uIn;
+			toCrontab += uIn;
+			toCrontab += " * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand";
+		}
 			break;
   case 's':
-		{}
+		{
+			string uIn;
+			cout << "Enter the update minute (0-59) or minutes separated only by commas (0,15,30,45) to be run every hour:" << endl;
+			cin >> uIn;
+			cout << endl;
+			toCrontab += usrIn;
+			toCrontab += " * * * * $HOME/RemoteCommand/RemoteCommand/RemoteCommand";
+		}
 			break;
   case 'S':
 		{}
@@ -191,13 +210,13 @@ void installRemoteCommand(){
 		}
 			break;
 			
-  
-	}
+	} // END switch
 	
 	
 	
 	
 	if(copyCrontabToClip){
+		
 		// Copy crontab entry to clipboard (OSX & unix & linux)
 #if defined(__APPLE__) && defined(__MACH__)
 		sprintf(toSystem, "echo \"%s\" | pbcopy", toCrontab.c_str());
@@ -255,8 +274,11 @@ void update(){
 	ifs.close();
 	if( email.length() < 1 ){
 		cout << "ERROR: Cannot find git user email. This may cause problems." << endl;
+		system("rm gitEmail");
 	}
-	else{system("rm gitEmail");}
+	else{
+		system("rm gitEmail");
+	}
 	string branchName = email.substr(0,email.find("@"));
 	
 	
@@ -272,7 +294,7 @@ int main(int argc, const char * argv[]) {
 //	
 //	return 222;
 	
-	for(int i=0; i<argc; i++){
+	for(int i=1; i<argc; i++){
 		
 		if( strncmp(argv[i], "--install", 9) == 0 ){
 			installRemoteCommand();
