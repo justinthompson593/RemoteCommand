@@ -7,8 +7,8 @@
 //
 
 #include <iostream>
-#include <stdlib.h>
-#include <string>
+#include <stdlib.h>			// for system()
+#include <string.h>			// for strncmp()
 #include <fstream>
 
 using namespace std;
