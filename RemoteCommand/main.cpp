@@ -42,9 +42,12 @@ void printCrontabHelp(){
 // and $HOME/RemoteCommand/RemoteCommand/newCommand are defined
 bool compareOldAndNew(){
 	
+	char buff[2048];
+	
 	bool out = false;
 	
-	system("echo $HOME/RemoteCommand/RemoteCommand/ > RemCmdDir");
+	sprintf(buff, "echo $HOME/RemoteCommand/RemoteCommand/ > RemCmdDir");
+	system(buff);
 	ifstream pathFile("RemCmdDir");
 	string Path((istreambuf_iterator<char>(pathFile)), istreambuf_iterator<char>());
 	
@@ -52,7 +55,7 @@ bool compareOldAndNew(){
 	Path = Path.substr(0, Path.length()-1);
 	
 	
-	char buff[2048];
+	
 	sprintf(buff, "%soldCommand", Path.c_str());
 	ifstream oldFile(buff);
 	sprintf(buff, "%snewCommand", Path.c_str());
@@ -67,7 +70,8 @@ bool compareOldAndNew(){
 	if( oldF.compare(newF) == 0 )
 		out = true;
 	
-	system("rm RemCmdDir");
+	sprintf(buff, "rm RemCmdDir");
+	system(buff);
 	
 	return out;
 }
@@ -291,13 +295,16 @@ void update(){
 	char systemBuffer[4096];
 	
 	// Run the new script
-	system("$HOME/RemoteCommand/RemoteCommand/newCommand");
+	sprintf(systemBuffer, "$HOME/RemoteCommand/RemoteCommand/newCommand");
+	system(systemBuffer);
 	
 	// Overwrite oldCommand
-	system("cp $HOME/RemoteCommand/RemoteCommand/newCommand $HOME/RemoteCommand/RemoteCommand/oldCommand");
+	sprintf(systemBuffer, "cp $HOME/RemoteCommand/RemoteCommand/newCommand $HOME/RemoteCommand/RemoteCommand/oldCommand");
+	system(systemBuffer);
 	
 	// Get email prefix for branch name ( joesmith@web.net --> BranchName joesmith )
-	system("echo \"$(git config user.email)\" > gitEmail");
+	sprintf(systemBuffer, "echo \"$(git config user.email)\" > gitEmail");
+	system(systemBuffer);
 	ifstream ifs("gitEmail");
 	string email((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	ifs.close();
@@ -340,7 +347,9 @@ int main(int argc, const char * argv[]) {
 	}
 	else{
 		// Pull from git
-		system("cd $HOME/RemoteCommand && git pull");
+		char buff[2048];
+		sprintf(buff, "cd $HOME/RemoteCommand && git pull");
+		system(buff);
 //		if(!compareOldAndNew())
 //			update();
 	}
