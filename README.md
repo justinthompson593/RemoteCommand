@@ -1,7 +1,2 @@
-# Remote Command
-
-To install Remote Command run
-
-```
-curl -o install.cpp https://raw.githubusercontent.com/justinthompson593/RemoteCommand/master/RemoteCommand/main.cpp && g++ install.cpp -o install && ./install --install && rm install 
-```
+# justincthompson
+Created on Tue Sep  5 17:46:39 PDT 2017
